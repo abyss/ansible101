@@ -1,0 +1,16 @@
+[ubuntu]
+# pulled from dynamic inventory
+
+[centos]
+# pulled from dynamic inventory
+
+# groups from dynamic must be defined for child groups to be able to work
+[multi:children]
+ubuntu
+centos
+
+[centos:vars]
+ansible_user=centos
+
+[ubuntu:vars]
+ansible_user=ubuntu
