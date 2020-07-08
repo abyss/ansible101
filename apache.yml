@@ -1,12 +1,10 @@
+---
 - name: Install Apache
   hosts: all
   become: true
 
   handlers:
-    - name: restart apache
-      service:
-        name: "{{ apache_package }}"
-        state: restarted
+    - import_tasks: handlers/apache.yml
 
   pre_tasks:
     - name: Load variable files.
@@ -16,19 +14,4 @@
         - vars/apache_default.yml
 
   tasks:
-    - name: Ensure Apache is installed.
-      package:
-        name: "{{ apache_package }}"
-        state: present
-
-    - name: Copy test config file.
-      copy: 
-        src: files/test.conf
-        dest: "{{ apache_config_dir }}/test.conf"
-      notify: restart apache
-
-    - name: Ensure Apache is running and starts at boot.
-      service:
-        name: "{{ apache_service }}"
-        state: started
-        enabled: true
+    - import_tasks: tasks/apache.yml
