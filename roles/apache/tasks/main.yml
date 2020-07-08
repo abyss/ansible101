@@ -1,4 +1,10 @@
 ---
+- name: Load OS-variable files.
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "defaults/apache_{{ ansible_os_family }}.yml"
+    - defaults/apache_default.yml
+
 - name: Ensure Apache is installed.
   package:
     name: "{{ apache_package }}"
