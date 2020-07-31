@@ -5,10 +5,13 @@
     cache_valid_time: 3600
 
 - name: Install Java
-  apt: name=openjdk-8-jdk state=present
+  apt:
+    name: openjdk-8-jdk
+    state: present
 
 - name: Download Solr
   get_url:
+    # yamllint disable-line rule:line-length
     url: "http://apache.mirrors.hoobly.com/lucene/solr/{{ solr_version }}/solr-{{ solr_version }}.tgz"
     dest: "{{ download_dir }}/solr-{{ solr_version }}.tgz"
     checksum: "{{ solr_checksum }}"
@@ -32,4 +35,7 @@
     creates={{ solr_dir }}/bin/solr
 
 - name: Ensure Solr is started and enabled at boot
-  service: name=solr state=started enabled=true
+  service:
+    name: solr
+    state: started
+    enabled: true
