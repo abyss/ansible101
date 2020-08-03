@@ -10,6 +10,12 @@
     name: "{{ apache_package }}"
     state: present
 
+- name: Copy hello world index.
+  copy:
+    src: files/index.html
+    dest: "/var/www/html/index.html"
+  notify: restart apache
+
 - name: Copy test config file.
   copy:
     src: files/test.conf

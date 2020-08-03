@@ -1,0 +1,5 @@
+exclude_paths:
+  - vars/api_key.yml
+
+skip_list:
+  - '701'

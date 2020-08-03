@@ -12,6 +12,7 @@
       environment:
         API_KEY: "{{ fake_api_key }}"
       register: echo_result
+      changed_when: false
 
     - name: Show the result.
       debug: var=echo_result.stdout
