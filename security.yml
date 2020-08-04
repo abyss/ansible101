@@ -1,0 +1,91 @@
+---
+- hosts: centos
+  become: true
+
+  handlers:
+    - name: restart ssh
+      service:
+        name: sshd
+        state: restarted
+
+  tasks:
+    - name: Tell SELinux about SSH's new port.
+      seport:
+        ports: 22
+        proto: tcp
+        setype: ssh_port_t
+        state: present
+
+    - name: Make sure SSH is more secure.
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: present
+        validate: "sshd -T -f %s"
+      with_items:
+        - regexp: "^PasswordAuthentication"
+          line: "PasswordAuthentication no"
+        - regexp: "^PermitRootLogin"
+          line: "PermitRootLogin no"
+        - regexp: "^Port"
+          line: "Port 22"
+      notify: restart ssh
+
+    - name: Add user johndoe.
+      user:
+        name: johndoe
+
+    - name: Add sudo group rights for deployment user.
+      lineinfile:
+        dest: /etc/sudoers
+        regexp: "^johndoe"
+        line: 'johndoe ALL=(ALL) NOPASSWD: ALL'
+        state: present
+        validate: 'visudo -cf %s'
+
+    - name: Remove unused packages.
+      package:
+        name:
+          - httpd
+          - nano
+          - mailutils
+        state: absent
+
+    - name: Edit file permissions.
+      file:
+        path: /etc/ssh/sshd_config
+        mode: 0600
+
+    - name: Set up autoupdates.
+      yum:
+        name: yum-cron
+        state: present
+
+    - name: Ensure auto updates are running.
+      service:
+        name: yum-cron
+        state: started
+        enabled: yes
+
+    - name: Install firewalld
+      package:
+        name: firewalld
+        state: present
+
+    - name: Ensure firewalld is running.
+      service:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: Configure ports in firewall.
+      firewalld:
+        state: "{{ item.state }}"
+        port: "{{ item.port }}"
+        zone: external
+        immediate: yes
+        permanent: yes
+      with_items:
+        - { state: 'enabled', port: '22/tcp' }
+        - { state: 'enabled', port: '123/udp' }
