@@ -1,0 +1,16 @@
+---
+plugin: aws_ec2
+
+regions:
+  - us-east-1
+
+# This creates a group for every "group" tag
+keyed_groups:
+  - key: tags.group
+    separator: ''
+
+  - key: tags.Name
+    separator: ''
+
+hostnames:
+  - network-interface.association.public-ip

@@ -2,3 +2,5 @@
 # Requires terraform-inventory (https://github.com/adammck/terraform-inventory)
 # and for this script to be executable
 ~/bin/terraform-inventory $@ ~/terraform-directory/.
+
+# Currently disabled and using .aws_ec2.yml isntead
